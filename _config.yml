@@ -1,4 +1,5 @@
 title: Surface Reconstruction Tool for 3DTK
-description: Xia Sun's final report for Google Summer of Code 2018
-show_downloads: false
+description: Xia Sun's final report for Google Summer of Code 2018 
+show_downloads: true
+google_analytics:
 theme: jekyll-theme-slate
