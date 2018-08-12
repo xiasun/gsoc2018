@@ -20,27 +20,32 @@ bin/recon dat dat/test/model -t true -d 12 -T 7.0 -j true
 ```
 ![dat](imgs/model_all_trimmed.png)
 
-
 2. Use a common points data, for example the [Stanford Bunny](http://graphics.stanford.edu/data/3Dscanrep/#bunny). A recommended way is convert the original model file into .xyz file that only contains the xyz coordinates, rename it as `scan000.3d` and put it into a directory for example `dat/bunny/`, new a file called `scan000.pose` and put it under the same directory, and then use commands below.
 ```shell
 bin/recon dat/bunny dat/bunny/model --inward false
 ```
 ![bunny](imgs/bunny.png)
 
-
-3. Use [Thermobremen](http://kos.informatik.uni-osnabrueck.de/3Dscans/)(No. 22 on this page) data, a typical city scan data, with file format uosr, auto reduction, scans joining, poisson octree depth 12 and trimming value 9.0.
-
+3. Use [Thermobremen](http://kos.informatik.uni-osnabrueck.de/3Dscans/) (No.22 on this page) data, a typical city scan data, with file format uosr, auto reduction, scans joining, poisson octree depth 12 and trimming value 9.0.
 ```shell
 bin/recon dat/testdata/thermobremen dat/testdata/thermobremen/result -f uosr -a true -j true -d 12 -T 9
 ```
 ![thermobremen](imgs/thermobremen.png)
 
-4. (color bug fixing) Use [Thermocolorlab](http://kos.informatik.uni-osnabrueck.de/3Dscans/)(No. 20 on this page) data, a typical indoor scan data, with file format uos_rrgbt, scans joining, filter xyz range from -500 to 500, poisson octree depth 12 and trimming value 8.0.
-
+4. Use [Thermocolorlab](http://kos.informatik.uni-osnabrueck.de/3Dscans/) (No.20 on this page) data, a typical indoor scan data, with file format uos_rrgbt, scans joining, color as input data, filter xyz range from -500 to 500, poisson octree depth 12 and trimming value 8.0. In this sample a range filter is setted since the while scene is too large.
 ```shell
-bin/recon dat/testdata/thermocolorlab/ dat/testdata/thermocolorlab/meodel -j true -f uos_rrgbt -d 12 -T 8 -s 0 -e 12 -u "11;6;-500;500;-500;500;-500;500" --incolor true
+bin/recon dat/testdata/thermocolorlab/ dat/testdata/thermocolorlab/model -j true -f uos_rrgbt -d 12 -T 8 -s 0 -e 12 -u "11;6;-500;500;-500;500;-500;500" --incolor true
 ```
 ![thermocolorlab](imgs/thermocolorlab.png)
+
+5. Use [Randersacker](http://kos.informatik.uni-osnabrueck.de/3Dscans/) (No.26 on this page) data, a typical natrual open scene data. For this kind of large dataset, certain kinds of reduction is needed before reconstruction. You can either use `--autored` option like Thermobremen data above, or to manually set reduction parameters with `--reduce` option and `--octree` options. Sometimes for large dataset, reduction process will take a large number of time, finding an appropriate reduction parameters may take more time, so it is recommended that you use `bin/scan_red` program to reduce scans first, then use the new files as data source for reconstruction. <br> 
+Usages below use `scan_red` to reduce scans first, then use `recon` program to generate mesh surface. <br>
+Scan data of objects like tree leaves are not exactly a 'surface' but more like a 'volume', so the reconstruction of tree leaves might not be good. This sample is more likely to be a demo.
+```shell
+bin/scan_red -s 0 -e 3 -f uosr --reduction OCTREE --voxel 20 --octree 10 dat/testdata/randersacker/
+bin/recon dat/testdata/randersacker/reduced dat/testdata/randersacker/reduced/model -j true -d 12 -T 9 -u "11;6;-1000;1000;-1000;1000;-1000;1000"
+```
+![randersacker](imgs/randersacker.png)
 
 ### Options list
 ##### Mandatory options
