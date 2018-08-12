@@ -16,7 +16,7 @@ The general workflow of the my tool is illustrated below.
 
 1. Use the default sample data under `dat/` directory, with all scans joining first, poisson octree depth 12 and trimming value 7.0.
 ```shell
-bin/recon dat dat/test/xiaosaomao -t true -d 12 -T 7.0 -j true
+bin/recon dat dat/test/model -t true -d 12 -T 7.0 -j true
 ```
 ![dat](imgs/model_all_trimmed.png)
 
