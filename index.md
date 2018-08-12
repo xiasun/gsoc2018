@@ -38,7 +38,7 @@ bin/recon dat/testdata/thermobremen dat/testdata/thermobremen/result -f uosr -a 
 4. (color bug fixing) Use [Thermocolorlab](http://kos.informatik.uni-osnabrueck.de/3Dscans/)(No. 20 on this page) data, a typical indoor scan data, with file format uos_rrgbt, scans joining, filter xyz range from -500 to 500, poisson octree depth 12 and trimming value 8.0.
 
 ```shell
-bin/recon dat/testdata/thermocolorlab/ -j true -f uos_rrgbt -d 12 -T 8 -s 0 -e 12 -u "11;6;-500;500;-500;500;-500;500"
+bin/recon dat/testdata/thermocolorlab/ dat/testdata/thermocolorlab/meodel -j true -f uos_rrgbt -d 12 -T 8 -s 0 -e 12 -u "11;6;-500;500;-500;500;-500;500" --incolor true
 ```
 ![thermocolorlab](imgs/thermocolorlab.png)
 
