@@ -28,8 +28,8 @@
 
 p img {
   width: 100%;
-  display: inline;
-  margin: 0;
+  display: block;
+  margin: 0 auto;
   padding: 0;
   vertical-align: middle;
   text-align: center;
@@ -38,7 +38,7 @@ p img {
 
 .inner {
   position: relative;
-  max-width: 720px;
+  max-width: 1080px;
   padding: 20px 10px;
   margin: 0 auto;
 }

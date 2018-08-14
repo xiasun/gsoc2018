@@ -1,19 +1,24 @@
 ---
 layout: default
 ---
+
 ### Introduction
 
-Surface reconstruction tool for 3DTK, is a program within 3DTK for reconstruction of trianglized mesh surfaces from 3D points data, with screened poisson surface reconstruction. It uses data sturctures and other tools that is provided with 3DTK, and add a poisson surface reconstruction.
+Surface reconstruction tool for 3DTK, is a program within 3DTK for reconstruction of triangulated mesh surfaces from 3D points data, with screened poisson surface reconstruction algorithm. It uses data structures and other tools that are provided with 3DTK. Users can use the `recon` program with the description in this page to reconstruct mesh surface from points. They can also include the poisson class like the `recon` program did in their own project to reach these functions.
 
-Poisson surface reconstruction was introduced by [Michael Kazhdan](http://www.cs.jhu.edu/~misha/) et. al. in 2006, and was improved by their team several times after that. [Michael Kazhdan's implementation](http://www.cs.jhu.edu/~misha/Code/PoissonRecon/Version10.02/) of this algorithms has been widely used by many other softwares and tools like MeshLab and PCL, and is also under [maintainance](https://github.com/mkazhdan/PoissonRecon) by now. The reconstruction algorithm of my tool is also based on it.
+Poisson surface reconstruction was introduced by [Michael Kazhdan](http://www.cs.jhu.edu/~misha/) et. al. in 2006, and was improved by their team several times after that. [Michael Kazhdan's implementation](http://www.cs.jhu.edu/~misha/Code/PoissonRecon/Version10.02/) of this algorithms has been widely used by many other software and tools like MeshLab and PCL, and is still under [maintainance](https://github.com/mkazhdan/PoissonRecon) by now. The reconstruction algorithm of my tool is also based on it.
 
-The general workflow of the my tool is illustrated below.
+The general workflow of this tool is illustrated below. The programs start with users input options, it parses these options and set specified values or default values for all variables. Then it read scans, if user set range filter or reduction parameters, the program will do filter and reduction to get a smaller data size and range. After this, all scans will be registered based on frames or pose info. Then, normal calculation will be performed on each scan, if user chooses to join scans, all scans will be merged into a big dataset as the input of poisson reconstruction, if no join is set, each scan will be used as input of poisson reconstruction individually. After reconstruction, a surface trimming will be applied on the reconstructed models, and models will be written to a specific path in the end.
 
-[workflow chart](imgs/workflow.png)
+![workflow chart](imgs/workflow.png)
 
 
 ---
 ### Sample usages
+
+To use surface reconstruction tool in 3DTK, you can first download [code](https://sourceforge.net/p/slam6d/code/HEAD/tree/) with `svn checkout https://svn.code.sf.net/p/slam6d/code/trunk slam6d-code` and build the entire project with instruction in [INSTALL.md](https://sourceforge.net/p/slam6d/code/HEAD/tree/trunk/INSTALL.md).
+
+Please know that this tool is not compatible with Ubuntu 14.04 (Trusty) due to a GCC compiler bug. If you are using Ubuntu 14.04, you may set CMake option `WITH_MESH` to `OFF` and try other functions of 3DTK.
 
 1. Use the default sample data under `dat/` directory. This sample data is composed of three scans, we join them first with `-j` tag, since it is relatively sparse and non-closed, we set a trimming value 7 with `-T` tag to trim extra part away. You can compare the model_all.obj and model_all_trimmed.obj to view the effects of trimming.
 ```shell
@@ -58,10 +63,14 @@ bin/recon dat/testdata/randersacker/reduced dat/testdata/randersacker/reduced/mo
 ---
 ### Options list
 ##### I/O options
-- **input-dir (mandatory)**, used without tag, the directory of input scans. <br> 
+- **input-dir (mandatory)**, used without tag, this option provides the directory of input scans. <br> 
 e.g. `dat/test`
-- **output-dir**, used without tag, the output file name of models, if not set, models will be written to the input directory with names like model0_all.obj, model1_all.obj, ... (not joined) or model_all.obj and model_all_trimmed.obj (joined).  <br> 
+- **output-dir**, used without tag, this option provides the output file name of models, models will be written to the input directory with names like model0_all.obj, model1_all.obj, ... (not joined) or model_all.obj and model_all_trimmed.obj (joined). if this option is not set, models will be written to the root directory of the project. <br> 
 e.g. `dat/test/model`
+- **--start or -s**, used to set the start index of scan to be read, index start from 0, option value should be an integer number. By default this value will be 0.<br>
+e.g. `-s 0`
+- **--end or -e**, used to set the end index of scan to be read, index start from 0, option value should be an integer number. By default this value will be -1, this means all scans in current directory will be read.<br>
+e.g. `-e 10`
 - **--format or -f**, specify format of input data, option value should be a string, if not set, the default format will be uos. Supported formats description could be found [here](http://slam6d.sourceforge.net/doc/fileformats.html). <br>
 e.g. `-f uos_rgb`
 - **--scanserver or -S**, set to use scanserver as input method, no option value needed. Basic scan will be used if this tag is not setted.<br> 
@@ -94,14 +103,31 @@ e.g. `-y`
 e.g. `-t`
 
 ##### Normal calculation options
-(to be updated)
+- **--normal or -g**, set to specify normal calculation methods, option value should be a string that represent the method. Available methods so far are KNN, ADAPTIVE_KNN, AKNN, ADAPTIVE_AKNN, PANORAMA (OpenCV required) and PANORAMA_FAST (OpenCV required). By default the AKNN methods will be used for normal calculation.<br> 
+e.g. `-g KNN`
+- **--K1 or -k**, set k value used in the nearest neighbor search, option value should be an integer number. By default this value is 20.<br>
+e.g. `-k 10`
+- **--K2 or -K**, set the max value of k adaptation, option value should be an integer number. By default this value is 20.<br>
+e.g. `-K 10`
+- **--width or -w**, set the width of panorama image used for PANORAMA / PANORAMA_FAST normals calculation, option value should be an integer number. By default this value is 3600.<br>
+e.g. `-w 2400`
+- **--height or -h**, set the height of panorama image used for PANORAMA / PANORAMA_FAST normals calculation, option value should be an integer number. By default thsi value is 1000. <br>
+e.g. `-h 800`
 
 ##### Poisson options
-(to be updated)
+- **--outward or -I**, set to let surface normal outward from the object surface, no option value needed. By default the normals are towards the scanner which we called inward. In most scans data, normals of points are supposed to be inward towards the scanner. For some water-tight data that is usually composed of many scans already, for example a sculpture, their ideal normal should be outward from the object surface. <br>
+e.g. `-I`
+- **--depth or -d**, set the maximum depth of the octree that will be used for surface reconstruction, the value should be an integer number. By default this value is 8. As the octree depth increases, more detail of the surface could be revealed, but more memory / time will be used.<br>
+e.g. `-d 12`
+- **--samples or -P**, set the minimum number of sample points that should fall within an octree node as the octree construction is adapted to sampling density, the option value should be a integer number. By default the this value is 1. For noise-free samples, small values in the range [1.0 - 5.0] can be used. For more noisy samples, larger values in the range [15.0 - 20.0] may be needed to provide a smoother, noise-reduced, reconstruction.<br>
+e.g. `-P 10`
+- **--trim or -T**, set the value for mesh trimming, the option value should be an floating number. By default the trimming value is 0 which means no face will be trimmed. Since the poisson surface reconstruction tends to generate a closed surface that interpolate many extra faces that are far away and dense, the trimming operation would remove this part of faces based on a thresholding density value. As the trimming value increases, more faces will be trimmed and the remaining faces are fewer and fewer. Typically trimming value from 6 to 9 work for most scans data.<br>
+e.g. `-T 7.0`
+
 
 ---
 ### Commits
-Commits can be viewed on Source Forge [commits list]((https://sourceforge.net/p/slam6d/code/commit_browser)). Most of my source codes and changes are within [include/mesh](https://sourceforge.net/p/slam6d/code/HEAD/tree/trunk/include/mesh/) and [src/mesh](https://sourceforge.net/p/slam6d/code/HEAD/tree/trunk/src/mesh/) directories.
+Commits can be viewed on Source Forge [commits list](https://sourceforge.net/p/slam6d/code/commit_browser). Most of my source codes and changes are within [include/mesh](https://sourceforge.net/p/slam6d/code/HEAD/tree/trunk/include/mesh/) and [src/mesh](https://sourceforge.net/p/slam6d/code/HEAD/tree/trunk/src/mesh/) directories.
 - [[r1890]](https://sourceforge.net/p/slam6d/code/1890) mesh: fix bugs for color reading and transformation
 - [[r1889]](https://sourceforge.net/p/slam6d/code/1889) mesh: reorganize source code file structures, fix bug for default PointWeight unset
 - [[r1886]](https://sourceforge.net/p/slam6d/code/1886) mesh: improve auto reduce option and memory usages
@@ -111,7 +137,7 @@ Commits can be viewed on Source Forge [commits list]((https://sourceforge.net/p/
 - [[r1877]](https://sourceforge.net/p/slam6d/code/1877) Apply SurfaceTrimmer with color to recon program
 - [[r1875]](https://sourceforge.net/p/slam6d/code/1875) mesh: apply PoissonRecn with color to recon program
 - [[r1874]](https://sourceforge.net/p/slam6d/code/1874) mesh: Add PoissonRecon with color support
-- [[r1868]](https://sourceforge.net/p/slam6d/code/1868) normals: add flipNormal function and its usages in calc_normals program; mesh: add...
+- [[r1868]](https://sourceforge.net/p/slam6d/code/1868) normals: add flipNormal function and its usages in calc_normals program; mesh: add flipNormal option for surface inward or outward selection
 - [[r1859]](https://sourceforge.net/p/slam6d/code/1859) mesh: unify poisson related data structures and remove outdated codes
 - [[r1855]](https://sourceforge.net/p/slam6d/code/1855) mesh: add surface trimmer to filter reconstructed mesh
 - [[r1851]](https://sourceforge.net/p/slam6d/code/1851) mesh: try to rebuild
@@ -136,3 +162,28 @@ Commits can be viewed on Source Forge [commits list]((https://sourceforge.net/p/
 - [[r1795]](https://sourceforge.net/p/slam6d/code/1795) Integrate KB's poisson reconstruction into src/mesh and add two sample test data
 - [[r1793]](https://sourceforge.net/p/slam6d/code/1793) Update CMakeLists.txt to involve subdir 'src/mesh' in
 - [[r1792]](https://sourceforge.net/p/slam6d/code/1792) Add mesh input, output and redering with sample data
+
+---
+### Problems & Future work
+**1. Normal calculation:** The current normal calculation is indeed very useful and robust. But it would be better if it can have a better identity near edges area. This problem is identical for sparse data. For real data with relatively high points density, normal calculation near edges looks relatively okay.
+
+**2. Scan joining:** Current scan joining load all scans and perform a transformation on each of them and reach a final registration scan in the end. Maybe joining specific scans with real relationships would be more useful. For example, among 100 scans, scan004 to 009 generates all faces of a building, then we should cluster these scans together and calculate normals for them, this would avoid edge problem in the normal calculation. To reach this, some tag might be needed for each scan, that cluster a large scene into several water-tight objects.
+
+**3. Mesh rendering:** Currently, all rendering results in this page are screenshots from [MeshLab](http://www.meshlab.net/). It would be great if a basic mesh renderer could be added into show or qtshow. This way users can quickly view the surface they are just reconstructed. Or to be more advanced, surface may be rendered together with point set.
+
+**4. Mesh processing:** Originally I was going to add some mesh processing functions, but after all, only a surface trimmer is truly added and used. Maybe some mesh processing tools could be added in the future, with CGAL that is already introduced into 3DTK. But the priority of mesh processing might not be very high because I think 3DTK is originally designed for point data, surface mesh should be the output, and further processing would be on the next stage of work.
+
+**5. Other poisson options** I did not include all parameters of Poisson reconstruction into my work, because many of them are for research design purpose that might not be very useful for common data, and have not been truly tested. It would be great to test all of the options and provide interfaces for those useful ones.
+
+**6. Ohter reconstruction methods** Poisson reconstruction is a typical implicit reconstruction method, some other explicit ones might be introduced in the future. Since different data might fit different methods. Within the mesh/poisson directory there is a SSDRecon, since it shares similar data structures and workflow with PoissonRecon, it might be good to also introduce it into recon program. 
+
+---
+### References papers
+
+> Elseberg, J., Borrmann, D., Nüchter, A.: One Billion Points in the Cloud – An Octree for Efficient Processing of 3D Laser Scans. Isprs Journal of Photogrammetry & Remote Sensing, 2013, 76(1):76-88.</p>
+
+> Kazhdan, M., Bolitho, M., Hoppe, H.: Poisson Surface Reconstruction.: Proceedings of the Eurographics Symposium on Geometry Processing 2006. 2006:61-70.
+
+> Kazhdan, M., Hoppe, H.: Screened Poisson Surface Reconstruction. Acm Transactions on Graphics, 2013, 32(3):1-13.
+
+> Borrmann, D., Hess, R., Eck, D., Houshiar, H., Nüchter, A., Schilling, K.: Evaluation of Methods for Robotic Mapping of Cultural Heritage Sites.Proceedings of the 2th IFAC conference on Embedded Systems, Computer Intelligence and Telematics (CESCIT '15). p. 105--110.
