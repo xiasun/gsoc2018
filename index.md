@@ -44,7 +44,7 @@ bin/recon dat/testdata/thermocolorlab/ dat/testdata/thermocolorlab/model -j -f u
 ```
 ![thermocolorlab](imgs/thermocolorlab.png)
 
-5. Use [Ostia]() data, another indoor colored scan data. Very similar to the Thermocolorlab data, this sample demonstrate that you could use only part of the scan by removing extra scans files. We first set file format to uos_rgb and use color as input data. Then set poisson octree depth 12 and trimming value 9.0.
+5. Use [Ostia](https://robotik.informatik.uni-wuerzburg.de/telematics/download/3darch2015_2.pdf) data, another indoor colored scan data. Very similar to the Thermocolorlab data, this sample demonstrate that you could use only part of the scan by removing extra scans files. We first set file format to uos_rgb and use color as input data. Then set poisson octree depth 12 and trimming value 9.0.
 ```shell
 bin/recon dat/testdata/ostia dat/testdata/ostia -j -f uos_rgb -d 12 -T 9 -C
 ```
