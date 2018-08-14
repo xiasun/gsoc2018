@@ -128,6 +128,9 @@ e.g. `-T 7.0`
 ---
 ### Commits
 Commits can be viewed on Source Forge [commits list](https://sourceforge.net/p/slam6d/code/commit_browser). Most of my source codes and changes are within [include/mesh](https://sourceforge.net/p/slam6d/code/HEAD/tree/trunk/include/mesh/) and [src/mesh](https://sourceforge.net/p/slam6d/code/HEAD/tree/trunk/src/mesh/) directories.
+- [[r1893]](https://sourceforge.net/p/slam6d/code/1893) mesh: minor bug fixing and add README.md
+- [[r1892]](https://sourceforge.net/p/slam6d/code/1892) Disable build of mesh with Ubuntu trusty
+- [[r1891]](https://sourceforge.net/p/slam6d/code/1891) mesh: fix bool_switch issue in parse_options
 - [[r1890]](https://sourceforge.net/p/slam6d/code/1890) mesh: fix bugs for color reading and transformation
 - [[r1889]](https://sourceforge.net/p/slam6d/code/1889) mesh: reorganize source code file structures, fix bug for default PointWeight unset
 - [[r1886]](https://sourceforge.net/p/slam6d/code/1886) mesh: improve auto reduce option and memory usages
